@@ -1,8 +1,9 @@
+// @ts-ignore - type definitions are outdated
 import { KiteConnect } from 'kiteconnect';
 import { decrypt } from '../utils/encryption';
 
 export class ZerodhaBroker {
-  private kite: KiteConnect;
+  private kite: any;
   
   constructor(encryptedApiKey: string, encryptedAccessToken: string) {
     const apiKey = decrypt(encryptedApiKey);

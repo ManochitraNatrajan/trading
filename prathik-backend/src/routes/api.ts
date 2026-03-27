@@ -2,6 +2,7 @@ import express from 'express';
 import crypto from 'crypto';
 import { AuthService } from '../services/authService';
 import { AutoTradeEngine } from '../engine/autoTradeEngine';
+import { Signal } from '../models/mongooseSchema';
 
 const router = express.Router();
 const RAZORPAY_WEBHOOK_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET || 'prathik_webhook_secret';
@@ -34,10 +35,18 @@ router.post('/admin/signal', async (req, res) => {
   const { tradingsymbol, action, price, stopLoss, target, exchange, baseQty } = req.body;
 
   try {
-    // Dispatch signal to all followers
-    const successCount = await AutoTradeEngine.processSignal({
-      tradingsymbol, action, price, stopLoss, target, exchange, baseQty
+    // Create signal in DB
+    const newSignal = await Signal.create({
+      symbol: tradingsymbol,
+      action,
+      executionPrice: price,
+      stopLossPrice: stopLoss,
+      targetPrice: target,
+      baseQuantity: baseQty
     });
+
+    // Dispatch signal to all followers
+    const successCount = await AutoTradeEngine.processSignal(newSignal._id.toString());
 
     res.json({ success: true, executedFor: successCount });
   } catch (error: any) {

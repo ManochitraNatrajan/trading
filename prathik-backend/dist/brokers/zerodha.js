@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ZerodhaBroker = void 0;
+// @ts-ignore - type definitions are outdated
 const kiteconnect_1 = require("kiteconnect");
 const encryption_1 = require("../utils/encryption");
 class ZerodhaBroker {

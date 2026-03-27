@@ -7,7 +7,10 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const api_1 = __importDefault(require("./routes/api"));
+const db_1 = __importDefault(require("./config/db"));
 dotenv_1.default.config();
+// Connect to Database
+(0, db_1.default)();
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 5000;
 app.use((0, cors_1.default)());

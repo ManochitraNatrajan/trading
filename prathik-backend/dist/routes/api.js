@@ -7,6 +7,7 @@ const express_1 = __importDefault(require("express"));
 const crypto_1 = __importDefault(require("crypto"));
 const authService_1 = require("../services/authService");
 const autoTradeEngine_1 = require("../engine/autoTradeEngine");
+const mongooseSchema_1 = require("../models/mongooseSchema");
 const router = express_1.default.Router();
 const RAZORPAY_WEBHOOK_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET || 'prathik_webhook_secret';
 /**
@@ -35,10 +36,17 @@ router.post('/admin/signal', async (req, res) => {
     // In a real app: checkAdminMiddleware(req, res)
     const { tradingsymbol, action, price, stopLoss, target, exchange, baseQty } = req.body;
     try {
-        // Dispatch signal to all followers
-        const successCount = await autoTradeEngine_1.AutoTradeEngine.processSignal({
-            tradingsymbol, action, price, stopLoss, target, exchange, baseQty
+        // Create signal in DB
+        const newSignal = await mongooseSchema_1.Signal.create({
+            symbol: tradingsymbol,
+            action,
+            executionPrice: price,
+            stopLossPrice: stopLoss,
+            targetPrice: target,
+            baseQuantity: baseQty
         });
+        // Dispatch signal to all followers
+        const successCount = await autoTradeEngine_1.AutoTradeEngine.processSignal(newSignal._id.toString());
         res.json({ success: true, executedFor: successCount });
     }
     catch (error) {
