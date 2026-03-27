@@ -34,9 +34,9 @@ export default function PricingPage() {
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_YourKeyId", 
       amount: "499900", // amount in paise (₹4999.00)
       currency: "INR",
-      name: "Pratik Algo Lab",
+      name: "Prathik Algo Lab",
       description: "1-Month Premium Auto-Trading",
-      image: "/logo.jpg",
+      image: "/logo.jpeg",
       // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
       handler: function (response: any) {
         // Payment successful callback

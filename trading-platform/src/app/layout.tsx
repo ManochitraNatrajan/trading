@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Pratik Algo Lab",
+  title: "Prathik Algo Lab",
   description: "Advanced algorithmic trading simulator and live signal portal.",
 };
 

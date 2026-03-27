@@ -62,7 +62,7 @@ function RegisterContent() {
       
       <div className="w-full max-w-md z-10">
         <div className="text-center mb-10">
-          <Link href="/" className="inline-block text-2xl font-bold tracking-tight text-white mb-2">Prathik Trading</Link>
+          <Link href="/" className="inline-block text-2xl font-bold tracking-tight text-white mb-2">Prathik Algo Lab</Link>
           <h1 className="text-zinc-400 text-sm tracking-widest uppercase">Apply for Elite Access</h1>
         </div>
 

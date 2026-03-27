@@ -27,12 +27,12 @@ export default function Navigation() {
             <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-amber-500/20 group-hover:border-amber-500/50 transition-colors bg-black flex-shrink-0">
               <Image 
                 src="/logo.jpeg" 
-                alt="Pratik Algo Lab" 
+                alt="Prathik Algo Lab" 
                 fill
                 className="object-cover"
               />
             </div>
-            <span className="font-bold text-lg tracking-tight text-amber-500 group-hover:text-amber-400 transition-colors whitespace-nowrap hidden sm:block">Pratik Algo Lab</span>
+            <span className="font-bold text-lg tracking-tight text-amber-500 group-hover:text-amber-400 transition-colors whitespace-nowrap hidden sm:block">Prathik Algo Lab</span>
           </Link>
         </div>
 
