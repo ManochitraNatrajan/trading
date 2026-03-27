@@ -19,7 +19,9 @@ function LoginContent() {
     // If arriving from registration success
     if (searchParams.get("registered") === "true") {
       const savedUserId = localStorage.getItem("prathik_registered_userid");
-      if (savedUserId) setUserId(savedUserId);
+      if (savedUserId) {
+        setTimeout(() => setUserId(savedUserId), 0);
+      }
     }
   }, [searchParams]);
 
@@ -127,7 +129,7 @@ function LoginContent() {
           
           <div className="mt-8 text-center pt-6 border-t border-zinc-800/50">
             <p className="text-sm text-zinc-500">
-              Don't have an account? <Link href="/pricing" className="text-white hover:text-zinc-300 font-medium pb-0.5 border-b border-white/20">Purchase Access</Link>
+              Don&apos;t have an account? <Link href="/pricing" className="text-white hover:text-zinc-300 font-medium pb-0.5 border-b border-white/20">Purchase Access</Link>
             </p>
           </div>
         </div>

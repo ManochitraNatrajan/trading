@@ -37,6 +37,7 @@ export default function PricingPage() {
       name: "Pratik Algo Lab",
       description: "1-Month Premium Auto-Trading",
       image: "/logo.jpg",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
       handler: function (response: any) {
         // Payment successful callback
         // If logged in, just upgrade. If totally new, send to account generator.
@@ -57,8 +58,10 @@ export default function PricingPage() {
       },
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const paymentObject = new (window as any).Razorpay(options);
     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     paymentObject.on("payment.failed", function (response: any) {
       alert("Payment Failed: " + response.error.description);
       setIsProcessing(false);

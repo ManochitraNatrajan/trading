@@ -3,7 +3,6 @@
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import LiveCandles from "@/components/LiveCandles";
 
 export default function DashboardPage() {
@@ -24,11 +23,12 @@ export default function DashboardPage() {
   const [brokerPasswordInput, setBrokerPasswordInput] = useState("");
   const [isEditingPassword, setIsEditingPassword] = useState(false);
   const [editPasswordInput, setEditPasswordInput] = useState("");
+  const [daysLeft, setDaysLeft] = useState(0);
 
   useEffect(() => {
     const saved = localStorage.getItem("prathik_broker_goodwill");
     if (saved) {
-      setBrokerDetails(JSON.parse(saved));
+      setTimeout(() => setBrokerDetails(JSON.parse(saved)), 0);
     }
   }, []);
 
@@ -93,6 +93,12 @@ export default function DashboardPage() {
     return () => clearInterval(interval);
   }, [user, updateBalance]);
 
+  useEffect(() => {
+    if (user && user.status === "trial") {
+      setTimeout(() => setDaysLeft(Math.ceil((user.trialExpiresAt - Date.now()) / (1000 * 60 * 60 * 24))), 0);
+    }
+  }, [user]);
+
   if (isLoading || !user) {
     return (
       <div className="min-h-screen bg-[#050505] flex items-center justify-center">
@@ -102,7 +108,6 @@ export default function DashboardPage() {
   }
 
   const isTrial = user.status === "trial";
-  const daysLeft = Math.ceil((user.trialExpiresAt - Date.now()) / (1000 * 60 * 60 * 24));
 
   return (
     <div className="min-h-screen bg-[#050505] text-zinc-100 font-mono pb-20">

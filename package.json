@@ -1,0 +1,14 @@
+{
+  "name": "prathik-trading-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install --prefix prathik-backend && npm install --prefix trading-platform",
+    "dev:backend": "npm start --prefix prathik-backend",
+    "dev:frontend": "npm run dev --prefix trading-platform",
+    "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"magenta,cyan\" \"npm run dev:backend\" \"npm run dev:frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

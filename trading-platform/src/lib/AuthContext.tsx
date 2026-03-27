@@ -32,9 +32,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const storedUser = localStorage.getItem("auth_user");
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      setTimeout(() => setUser(JSON.parse(storedUser)), 0);
     }
-    setIsLoading(false);
+    setTimeout(() => setIsLoading(false), 0);
   }, []);
 
   const login = async (email: string, name: string, overrideStatus?: "trial" | "premium") => {
@@ -52,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         router.push(overrideStatus === "premium" ? "/admin" : "/dashboard");
         return;
       }
-    } catch (e) {
+    } catch {
       console.warn("Backend API unavailable. Falling back to local Mock Auth for demo purposes.");
     }
 

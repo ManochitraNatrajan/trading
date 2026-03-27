@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { api } from "@/lib/api";
@@ -24,7 +24,7 @@ function RegisterContent() {
     try {
       // Hit Node backend to send OTP via Twilio/Msg91
       await api.sendOtp(phone);
-    } catch(err) {
+    } catch {
       console.warn("Backend unavailable, simulating OTP send natively...");
     }
 
@@ -70,7 +70,7 @@ function RegisterContent() {
           
           {searchParams.get("error") === "not_registered" && (
             <div className="mb-6 p-4 bg-amber-500/10 border border-amber-500/20 text-amber-500 rounded-xl text-center text-sm font-medium">
-              We couldn't find an account. Please register and verify your details first!
+              We couldn&apos;t find an account. Please register and verify your details first!
             </div>
           )}
 

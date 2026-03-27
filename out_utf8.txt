@@ -1,0 +1,44 @@
+﻿
+> prathik-trading-monorepo@1.0.0 dev
+> concurrently -n "BACKEND,FRONTEND" -c "magenta,cyan" "npm run dev:backend" "npm run dev:frontend"
+
+[FRONTEND] 
+[FRONTEND] > prathik-trading-monorepo@1.0.0 dev:frontend
+[FRONTEND] > npm run dev --prefix trading-platform
+[FRONTEND] 
+[BACKEND] 
+[BACKEND] > prathik-trading-monorepo@1.0.0 dev:backend
+[BACKEND] > npm start --prefix prathik-backend
+[BACKEND] 
+[FRONTEND] 
+[FRONTEND] > trading-platform@0.1.0 dev
+[FRONTEND] > next dev
+[FRONTEND] 
+[FRONTEND] node:internal/modules/package_json_reader:116
+[FRONTEND]   const parsed = modulesBinding.readPackageJSON(
+[FRONTEND]                                 ^
+[FRONTEND] 
+[FRONTEND] Error: Invalid package config \\?\C:\Users\Admin\Downloads\Trading\trading-platform\node_modules\@swc\helpers\package.json.
+[FRONTEND]     at Object.read (node:internal/modules/package_json_reader:116:33)
+[FRONTEND]     at _readPackage (node:internal/modules/cjs/loader:490:55)
+[FRONTEND]     at resolveExports (node:internal/modules/cjs/loader:675:15)
+[FRONTEND]     at Module._findPath (node:internal/modules/cjs/loader:746:31)
+[FRONTEND]     at Module.<anonymous> (node:internal/modules/cjs/loader:1406:27)
+[FRONTEND]     at C:\Users\Admin\Downloads\Trading\trading-platform\node_modules\next\dist\server\require-hook.js:68:36
+[FRONTEND]     at defaultResolveImpl (node:internal/modules/cjs/loader:1059:19)
+[FRONTEND]     at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1064:22)
+[FRONTEND]     at Module._load (node:internal/modules/cjs/loader:1227:37)
+[FRONTEND]     at TracingChannel.traceSync (node:diagnostics_channel:328:14) {
+[FRONTEND]   code: 'ERR_INVALID_PACKAGE_CONFIG'
+[FRONTEND] }
+[FRONTEND] 
+[FRONTEND] Node.js v24.13.0
+[BACKEND] 
+[BACKEND] > prathik-backend@1.0.0 start
+[BACKEND] > node dist/app.js
+[BACKEND] 
+[FRONTEND] npm run dev:frontend exited with code 1
+[BACKEND] [dotenv@17.3.1] injecting env (16) from .env -- tip: ≡ƒöÉ encrypt with Dotenvx: https://dotenvx.com
+[BACKEND] Server listening on port 4000
+[BACKEND] npm run dev:backend exited with code 0
+
