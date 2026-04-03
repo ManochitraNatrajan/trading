@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -14,6 +14,42 @@ function CombinedLandingAndLogin() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch((err) => {
+        console.error("Service Worker registration failed:", err);
+      });
+    }
+
+    const handleBeforeInstallPrompt = (e: any) => {
+      // Prevent the mini-infobar from appearing on mobile
+      e.preventDefault();
+      // Stash the event so it can be triggered later.
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (deferredPrompt) {
+      e.preventDefault();
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === "accepted") {
+        console.log("User accepted the install prompt");
+      }
+      setDeferredPrompt(null);
+    }
+    // If no deferredPrompt is available, we do NOT e.preventDefault()
+    // This allows the browser to natively follow the href and download the .apk file instead!
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,15 +119,16 @@ function CombinedLandingAndLogin() {
 
           <div className="flex justify-center lg:justify-start mb-8">
             <a 
-              href="/prathik-trading-app.apk" 
-              download="prathik-trading-app.apk"
-              className="bg-zinc-900/80 backdrop-blur-sm border border-zinc-700/50 hover:border-amber-500 text-white px-6 py-3 font-bold tracking-wider rounded-xl text-sm transition-all flex items-center gap-3 group shadow-lg"
+              href="/prathik-algo-lab.apk" 
+              download="prathik-algo-lab.apk"
+              onClick={handleInstallClick}
+              className="bg-zinc-900/80 backdrop-blur-sm border border-zinc-700/50 hover:border-amber-500 text-white px-6 py-3 font-bold tracking-wider rounded-xl text-sm transition-all flex items-center gap-3 group shadow-lg cursor-pointer"
             >
               <svg className="w-6 h-6 text-amber-500 group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
               <div className="flex flex-col items-start leading-tight">
-                <span className="text-[10px] uppercase text-zinc-400 font-semibold tracking-widest">Get it on Android</span>
+                <span className="text-[10px] uppercase text-zinc-400 font-semibold tracking-widest">Install Application</span>
                 <span className="uppercase">Download App</span>
               </div>
             </a>

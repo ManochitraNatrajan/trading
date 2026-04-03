@@ -10,6 +10,10 @@ export default function Navigation() {
   const pathname = usePathname();
   const router = useRouter();
 
+  if (pathname === '/dashboard') {
+    return null;
+  }
+
   return (
     <nav className="bg-[#1f2937] border-b border-zinc-800 sticky top-0 z-50">
       <div className="max-w-[1400px] mx-auto flex items-center justify-between h-14 pr-0">

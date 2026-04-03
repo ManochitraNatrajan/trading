@@ -16,6 +16,13 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Prathik Algo Lab",
   description: "Advanced algorithmic trading simulator and live signal portal.",
+  manifest: "/manifest.json",
+  themeColor: "#10b981",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Prathik Algo Lab",
+  },
 };
 
 export default function RootLayout({

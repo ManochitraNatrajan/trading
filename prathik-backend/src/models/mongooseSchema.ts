@@ -64,3 +64,57 @@ const TradeSchema = new mongoose.Schema({
 export const User = mongoose.model('User', UserSchema);
 export const Signal = mongoose.model('Signal', SignalSchema);
 export const Trade = mongoose.model('Trade', TradeSchema);
+
+/**
+ * LIVE POSITION SCHEMA
+ * Currently running open trades
+ */
+const LivePositionSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  broker: { type: String, default: 'SIMULATED' },
+  symbol: { type: String, required: true },
+  buySell: { type: String, enum: ['BUY', 'SELL'], required: true },
+  quantity: { type: Number, required: true },
+  entryPrice: { type: Number, required: true },
+  stopLoss: { type: Number },
+  target: { type: Number },
+  status: { type: String, enum: ['OPEN', 'CLOSED'], default: 'OPEN' }
+}, { timestamps: true });
+
+export const LivePosition = mongoose.model('LivePosition', LivePositionSchema);
+
+/**
+ * TRADE HISTORY SCHEMA
+ * Fully closed positions with realized P/L
+ */
+const TradeHistorySchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  broker: { type: String, default: 'SIMULATED' },
+  symbol: { type: String, required: true },
+  buySell: { type: String, enum: ['BUY', 'SELL'], required: true },
+  quantity: { type: Number, required: true },
+  entryPrice: { type: Number, required: true },
+  exitPrice: { type: Number, required: true },
+  profitLoss: { type: Number, required: true },
+  strategyName: { type: String, default: 'Manual' },
+}, { timestamps: true });
+
+export const TradeHistory = mongoose.model('TradeHistory', TradeHistorySchema);
+
+/**
+ * ORDER HISTORY SCHEMA
+ * Log of all placement attempts
+ */
+const OrderHistorySchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  broker: { type: String, default: 'SIMULATED' },
+  symbol: { type: String, required: true },
+  orderType: { type: String, enum: ['MARKET', 'LIMIT', 'STOP_LIMIT'], required: true },
+  action: { type: String, enum: ['BUY', 'SELL'], required: true },
+  quantity: { type: Number, required: true },
+  price: { type: Number },
+  status: { type: String, enum: ['PENDING', 'EXECUTED', 'CANCELLED', 'REJECTED'], required: true }
+}, { timestamps: true });
+
+export const OrderHistory = mongoose.model('OrderHistory', OrderHistorySchema);
+

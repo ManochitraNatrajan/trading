@@ -1,0 +1,2 @@
+src/components/terminal/LiveChart.tsx(53,40): error TS2339: Property 'addCandlestickSeries' does not exist on type 'IChartApi'.
+src/components/terminal/LiveChart.tsx(123,12): error TS2339: Property 'setMarkers' does not exist on type 'ISeriesApi<"Candlestick", Time, CandlestickData<Time> | WhitespaceData<Time>, CandlestickSeriesOptions, DeepPartial<...>>'.
