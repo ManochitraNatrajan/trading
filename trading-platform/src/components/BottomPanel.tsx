@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 import { api } from "@/lib/api";
 
-export default function BottomPanel() {
+export default function BottomPanel({ localTradeHistory = [] }: { localTradeHistory?: any[] }) {
     const [activeTab, setActiveTab] = useState("Positions");
     const [positions, setPositions] = useState<any[]>([]);
     const [tradeHistory, setTradeHistory] = useState<any[]>([]);
@@ -94,44 +94,20 @@ export default function BottomPanel() {
                 )}
 
                 {activeTab === "Trade History" && (
-                    <table className="w-full text-left font-sans text-xs">
-                        <thead className="bg-[#111] text-zinc-500 border-b border-zinc-800 sticky top-0">
-                            <tr>
-                                <th className="p-3 font-medium">Time</th>
-                                <th className="p-3 font-medium">Symbol</th>
-                                <th className="p-3 font-medium">Action</th>
-                                <th className="p-3 font-medium">Qty</th>
-                                <th className="p-3 font-medium">Entry Price</th>
-                                <th className="p-3 font-medium">Exit Price</th>
-                                <th className="p-3 font-medium text-right">P&L</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-zinc-800">
-                            {isLoading ? (
-                                <tr><td colSpan={7} className="p-8 text-center text-zinc-600">Loading Trade History...</td></tr>
-                            ) : tradeHistory.length > 0 ? tradeHistory.map((trade, i) => (
-                                <tr key={i} className="hover:bg-zinc-900/50 text-zinc-300">
-                                    <td className="p-3 font-mono">{new Date(trade.createdAt || Date.now()).toLocaleString()}</td>
-                                    <td className="p-3 font-semibold">{trade.symbol}</td>
-                                    <td className={`p-3 font-bold ${trade.buySell === "BUY" || trade.action === "BUY" ? "text-emerald-500" : "text-red-500"}`}>
-                                        {trade.buySell || trade.action || "BUY"}
-                                    </td>
-                                    <td className="p-3">{trade.quantity || "-"}</td>
-                                    <td className="p-3 font-mono">₹{trade.entryPrice || trade.price || 0}</td>
-                                    <td className="p-3 font-mono border-r border-zinc-800/50">₹{trade.exitPrice || 0}</td>
-                                    <td className={`p-3 text-right font-medium ${(trade.profitLoss || 0) >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                                        {(trade.profitLoss || 0) >= 0 ? '+' : '-'}₹{Math.abs(trade.profitLoss || 0).toFixed(2)}
-                                    </td>
-                                </tr>
-                            )) : (
-                                <tr>
-                                    <td colSpan={7} className="p-8 text-center text-zinc-600 font-medium">
-                                        No trade history found.
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
+                    <div className="p-4 space-y-2 font-mono text-xs text-zinc-300 h-full overflow-auto custom-scrollbar">
+                        {localTradeHistory.length === 0 ? (
+                            <div className="text-zinc-500 text-center mt-4">No trade history</div>
+                        ) : localTradeHistory.map((t: any, i: number) => (
+                          <div key={i} className="bg-zinc-900/50 p-3 rounded border border-zinc-800 shadow flex flex-wrap gap-2 items-center">
+                            <span className={`font-black ${t.type === 'BUY' ? 'text-emerald-500' : 'text-red-500'}`}>{t.type}</span> 
+                            <span className="text-zinc-500">|</span> <span className="text-zinc-400">Entry:</span> <span className="text-white">{t.entry}</span> 
+                            <span className="text-zinc-500">|</span> <span className="text-zinc-400">Exit:</span> <span className="text-white">{t.exit}</span> 
+                            <span className="text-zinc-500">|</span> <span className="text-zinc-400">Qty:</span> <span className="text-white">{t.qty}</span> 
+                            <span className="text-zinc-500">|</span> <span className="text-zinc-400">P/L:</span> <span className={`font-bold ${t.pnl >= 0 ? "text-emerald-500" : "text-red-500"}`}>₹{t.pnl}</span> 
+                            <span className="text-zinc-500">|</span> <span className="text-zinc-500 text-[10px]">{t.time}</span>
+                          </div>
+                        ))}
+                    </div>
                 )}
 
                 {activeTab === "Order History" && (

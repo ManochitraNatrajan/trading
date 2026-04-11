@@ -14,12 +14,12 @@ export default function TradingChart({ symbol }: TradingChartProps) {
   const socketRef = useRef<Socket | null>(null);
 
   const [timeframe, setTimeframe] = useState("1m");
-  const [indicators, setIndicators] = useState({ ema: true, rsi: false, macd: false });
+  const [indicators, setIndicators] = useState({ ema: true, rsi: false, macd: false, prathik: false });
   const [tooltip, setTooltip] = useState<{ visible: boolean, x: number, y: number, data?: any }>({ visible: false, x: 0, y: 0 });
   const [showTracker, setShowTracker] = useState(false);
 
   useEffect(() => {
-    if (!chartContainerRef.current) return;
+    if (!chartContainerRef.current || symbol !== "NATGASMINI1") return;
 
     // 1. Initialize Chart
     const chart = createChart(chartContainerRef.current, {
@@ -66,10 +66,20 @@ export default function TradingChart({ symbol }: TradingChartProps) {
     chartRef.current = chart;
     seriesRef.current = candlestickSeries;
 
-    // Generate initial dummy historical data
+    const timeframeMapLocal: Record<string, string> = {
+      "1m": "1",
+      "5m": "5",
+      "15m": "15",
+      "1h": "60",
+      "4h": "240",
+      "1d": "D"
+    };
+    const intervalMinutes = timeframe === "1d" ? 1440 : (parseInt(timeframeMapLocal[timeframe]) || 1);
+
+    // Generate initial dummy historical data depending on timeframe
     const initialData = [];
-    let currentTime = Math.floor(Date.now() / 1000) - (100 * 60); // 100 mins ago
-    let lastClose = symbol === "BANKNIFTY" ? 48000 : 22000;
+    let currentTime = Math.floor(Date.now() / 1000) - (100 * intervalMinutes * 60); // 100 bars ago
+    let lastClose = 22000;
 
     for (let i = 0; i < 100; i++) {
         const o = lastClose;
@@ -78,7 +88,7 @@ export default function TradingChart({ symbol }: TradingChartProps) {
         const c = l + Math.random() * (h - l);
         initialData.push({ time: currentTime as Time, open: o, high: h, low: l, close: c });
         lastClose = c;
-        currentTime += 60; // 1 min increment
+        currentTime += intervalMinutes * 60; // step
     }
     candlestickSeries.setData(initialData);
 
@@ -178,7 +188,47 @@ export default function TradingChart({ symbol }: TradingChartProps) {
       socket.disconnect();
       chart.remove();
     };
-  }, [symbol]);
+  }, [symbol, timeframe]);
+
+  // Prathik Indicator Visuals (Lines)
+  useEffect(() => {
+    if (!seriesRef.current || !indicators.prathik) return;
+    
+    // Simulate current mocked logic values for price lines
+    const ep = 22010;
+    const tp = ep + 6;
+    const sl = ep - 15;
+    
+    const slLine = seriesRef.current.createPriceLine({
+        price: sl,
+        color: '#ef4444',
+        lineWidth: 2,
+        lineStyle: 3, 
+        title: '🛑 SL'
+    });
+    const entLine = seriesRef.current.createPriceLine({
+        price: ep,
+        color: '#3b82f6',
+        lineWidth: 2,
+        lineStyle: 3,
+        title: '🔵 ENTRY'
+    });
+    const tgtLine = seriesRef.current.createPriceLine({
+        price: tp,
+        color: '#10b981',
+        lineWidth: 2,
+        lineStyle: 3,
+        title: '🎯 TARGET'
+    });
+
+    return () => {
+        if (seriesRef.current) {
+            seriesRef.current.removePriceLine(slLine);
+            seriesRef.current.removePriceLine(entLine);
+            seriesRef.current.removePriceLine(tgtLine);
+        }
+    };
+  }, [indicators.prathik]);
 
   const [trackerData, setTrackerData] = useState([
     { stock: 'TCS', status: 'BULL', entry: 2414.2, ltp: 2360.0 },
@@ -201,23 +251,43 @@ export default function TradingChart({ symbol }: TradingChartProps) {
     return () => clearInterval(interval);
   }, []);
 
+  const timeframeMap: Record<string, string> = {
+    "1m": "1",
+    "5m": "5",
+    "15m": "15",
+    "1h": "60",
+    "4h": "240",
+    "1d": "D"
+  };
+
+  if (symbol !== "NATGASMINI1") {
+    return (
+      <div className="flex flex-col h-full w-full bg-[#050505] items-center justify-center p-4">
+        <div className="text-red-500 font-semibold text-lg text-center">
+          This strategy is allowed only for NATGASMINI1.
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full w-full">
         {/* Chart Header (Timeframes & Indicators) */}
         <div className="flex items-center justify-between p-2 border-b border-zinc-800 bg-zinc-900/50">
             <div className="flex items-center gap-2">
                 <span className="font-bold text-lg text-white mr-4">{symbol}</span>
-                {["1m", "5m", "15m", "1H", "4H", "1D"].map(tf => (
+                {[{label: "1 Min", val: "1m"}, {label: "5 Min", val: "5m"}, {label: "15 Min", val: "15m"}, {label: "1 Hour", val: "1h"}, {label: "4 Hour", val: "4h"}, {label: "1 Day", val: "1d"}].map(tf => (
                     <button 
-                        key={tf}
-                        onClick={() => setTimeframe(tf)}
-                        className={`px-2 py-1 text-xs font-semibold rounded ${timeframe === tf ? 'bg-blue-600 text-white' : 'text-zinc-400 hover:bg-zinc-800'}`}
+                        key={tf.val}
+                        onClick={() => setTimeframe(tf.val)}
+                        className={`px-2 py-1 text-xs font-semibold rounded ${timeframe === tf.val ? 'bg-blue-600 text-white' : 'text-zinc-400 hover:bg-zinc-800'}`}
                     >
-                        {tf}
+                        {tf.label}
                     </button>
                 ))}
             </div>
             <div className="flex gap-2">
+                <button onClick={() => setIndicators(p => ({...p, prathik: !p.prathik}))} className={`px-2 py-1 text-xs font-semibold rounded border ${indicators.prathik ? 'border-emerald-500 text-emerald-500 bg-emerald-500/10' : 'border-zinc-700 text-zinc-400'}`}>Prathik Elite Scalper</button>
                 <button onClick={() => setIndicators(p => ({...p, ema: !p.ema}))} className={`px-2 py-1 text-xs font-semibold rounded border ${indicators.ema ? 'border-emerald-500 text-emerald-500 bg-emerald-500/10' : 'border-zinc-700 text-zinc-400'}`}>EMA</button>
                 <button onClick={() => setIndicators(p => ({...p, rsi: !p.rsi}))} className={`px-2 py-1 text-xs font-semibold rounded border ${indicators.rsi ? 'border-emerald-500 text-emerald-500 bg-emerald-500/10' : 'border-zinc-700 text-zinc-400'}`}>RSI</button>
                 <button onClick={() => setIndicators(p => ({...p, macd: !p.macd}))} className={`px-2 py-1 text-xs font-semibold rounded border ${indicators.macd ? 'border-emerald-500 text-emerald-500 bg-emerald-500/10' : 'border-zinc-700 text-zinc-400'}`}>MACD</button>
@@ -234,10 +304,10 @@ export default function TradingChart({ symbol }: TradingChartProps) {
             </div>
 
             {/* Click Tooltip Overlay (Prathik Algo Lab Box) */}
-            {tooltip.visible && tooltip.data && (
+            {(tooltip.visible || indicators.prathik) && (
                 <div 
                     className="absolute z-50 bg-[#1e222d] border border-zinc-700/50 rounded shadow-2xl overflow-hidden pointer-events-none"
-                    style={{ left: Math.min(tooltip.x + 15, chartContainerRef.current?.clientWidth ? chartContainerRef.current.clientWidth - 230 : tooltip.x), top: tooltip.y + 15, minWidth: '220px' }}
+                    style={{ left: tooltip.visible ? Math.min(tooltip.x + 15, chartContainerRef.current?.clientWidth ? chartContainerRef.current.clientWidth - 230 : tooltip.x) : 15, top: tooltip.visible ? tooltip.y + 15 : 80, minWidth: '220px' }}
                 >
                     <div className="bg-zinc-800/80 px-3 py-2 border-b border-zinc-700/50 flex items-center justify-between">
                         <span className="text-[11px] font-bold text-white tracking-widest">🏆 PRATHIK ALGO LAB 🏆</span>
@@ -245,8 +315,8 @@ export default function TradingChart({ symbol }: TradingChartProps) {
                     <div className="p-3 space-y-2 text-[11px] font-semibold">
                         <div className="flex justify-between"><span className="text-zinc-400">LICENSE STATUS:</span> <span className="text-emerald-500">✅ ACTIVE</span></div>
                         <div className="flex justify-between"><span className="text-zinc-400">CONTACT:</span> <span className="text-zinc-100">9042701119</span></div>
-                        <div className="flex justify-between"><span className="text-zinc-400">BOOKED P/L:</span> <span className="text-blue-400">₹{Math.floor((tooltip.data.close - tooltip.data.open) * 50)}</span></div>
-                        <div className="flex justify-between"><span className="text-zinc-400">RUNNING P/L:</span> <span className="text-blue-400">₹{Math.floor((tooltip.data.high - tooltip.data.low) * 25)}</span></div>
+                        <div className="flex justify-between"><span className="text-zinc-400">BOOKED P/L:</span> <span className="text-blue-400">₹{tooltip.data ? Math.floor((tooltip.data.close - tooltip.data.open) * 50) : '3,250'}</span></div>
+                        <div className="flex justify-between"><span className="text-zinc-400">RUNNING P/L:</span> <span className="text-blue-400">₹{tooltip.data ? Math.floor((tooltip.data.high - tooltip.data.low) * 25) : '+850'}</span></div>
                         <div className="flex justify-between"><span className="text-zinc-400">WIN RATE:</span> <span className="text-zinc-100">45.17%</span></div>
                     </div>
                     <div className="bg-emerald-600 px-3 py-1 text-center">
